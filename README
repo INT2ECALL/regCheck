@@ -1,0 +1,48 @@
+package main
+
+import (
+	"github.com/tidwall/gjson"
+	"log"
+	"os"
+	"regexp"
+)
+
+const json = `{"name":{"first":"Janet","last":"Prichard"},"age":47}`
+
+func main() {
+	var duplicateVar map[string]string
+	duplicateVar = make(map[string]string) //不初始化会报错*/
+	// 简写  m := make(map[string]int)
+	data, err := os.ReadFile("./cmd-sf.json")
+	if err != nil {
+		log.Fatalf("File reading error: %v", err)
+	}
+	//log.Printf("Contents of file: %s", string(data))
+
+	result := gjson.Get(string(data), "rule")
+	result.ForEach(func(key, value gjson.Result) bool {
+		//println(value.String())
+		result = gjson.Get(value.String(), "cmd")
+
+		if duplicateVar[result.String()] == "" {
+			duplicateVar[result.String()] = "1"
+		} else {
+			println(result.String())
+		}
+
+		//_ = regexp.MustCompile()
+		regexRet := gjson.Get(value.String(), "regex")
+
+		regexRet.ForEach(func(key, value gjson.Result) bool {
+			//println(value.String())
+			result = gjson.Get(value.String(), "reg")
+			_ = regexp.MustCompile(result.String())
+			println(result.String())
+			return true // keep iterating
+		})
+
+		//println(result.String())
+		return true // keep iterating
+	})
+
+}
